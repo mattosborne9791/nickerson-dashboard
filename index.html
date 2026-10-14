@@ -194,20 +194,20 @@ tr:hover td { background: var(--bg); }
             <!-- Permanent orange zone: £14,000–£16,677 (46.66–55.59% of arc) -->
             <path id="gauge-orange-bg" d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="#f97316" stroke-width="18" stroke-linecap="butt"
               stroke-dasharray="0 283" stroke-dashoffset="0"/>
-            <!-- Permanent green zone background: £16,678–£30,000 -->
+            <!-- Permanent green zone background: £7,840–£12,000 -->
             <path id="gauge-green-bg" d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="#bbf7d0" stroke-width="18" stroke-linecap="butt"
               stroke-dasharray="0 283" stroke-dashoffset="0"/>
             <!-- Green fill (active, grows as value increases past threshold) -->
             <path id="gauge-green" d="M10,100 A90,90 0 0,1 190,100" fill="none" stroke="#16a34a" stroke-width="18" stroke-linecap="butt"
               stroke-dasharray="0 283" stroke-dashoffset="0" style="transition:all .7s"/>
-            <!-- Threshold tick at £16,678 -->
+            <!-- Threshold tick at £7,840 -->
             <line id="gauge-tick" x1="100" y1="10" x2="100" y2="22" stroke="var(--fg3)" stroke-width="2"/>
             <!-- Needle -->
             <line id="gauge-needle" x1="100" y1="100" x2="100" y2="18" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round"
               style="transform-origin:100px 100px;transform:rotate(-90deg);transition:transform .7s"/>
             <circle cx="100" cy="100" r="5" fill="var(--fg)"/>
-            <!-- Only label: £16,678 target -->
-            <text x="100" y="-5" font-size="11" font-weight="700" fill="var(--fg3)" font-family="Inter,sans-serif" text-anchor="middle">£16,678</text>
+            <!-- Only label: £7,840 target -->
+            <text x="100" y="-5" font-size="11" font-weight="700" fill="var(--fg3)" font-family="Inter,sans-serif" text-anchor="middle">£7,840</text>
           </svg>
           <div id="meter-label" style="font-size:12px;font-weight:600;text-align:center;margin-top:2px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading…</div>
         </div>
@@ -485,14 +485,14 @@ async function fetchAll() {
     document.getElementById('kpi-gl').textContent = gbp(glNet);
 
     // Semicircular gauge — £0–£30,000
-    // Red: £0–£13,999 | Orange: £14,000–£16,677 | Green: £16,678–£30,000
-    const GAUGE_MAX = 30000, GAUGE_RED_END = 13999, GAUGE_THRESH = 16678;
+    // Red: £0–£5,249 | Orange: £5,250–£7,839 | Green: £7,840–£12,000
+    const GAUGE_MAX = 12000, GAUGE_RED_END = 5249, GAUGE_THRESH = 7840;
     const ARC_LEN = Math.PI * 90; // r=90 semicircle ≈ 282.74
     const soVal = Object.values(soLineTotals).reduce((s,v) => s+v, 0);
     const clampedVal = Math.min(Math.max(soVal, 0), GAUGE_MAX);
     const valPct = clampedVal / GAUGE_MAX;
-    const redEndPct   = GAUGE_RED_END / GAUGE_MAX;    // 0.4666
-    const threshPct   = GAUGE_THRESH  / GAUGE_MAX;    // 0.5559
+    const redEndPct   = GAUGE_RED_END / GAUGE_MAX;    // 0.4374
+    const threshPct   = GAUGE_THRESH  / GAUGE_MAX;    // 0.6533
 
     // Permanent red zone: 0 → £13,999
     const redLen = redEndPct * ARC_LEN;
@@ -527,10 +527,10 @@ async function fetchAll() {
     const needleDeg = valPct * 180 - 90;
     document.getElementById('gauge-needle').style.transform = 'rotate(' + needleDeg + 'deg)';
 
-    // Label colour: red < £14k, orange £14k–£16,677, green £16,678+
+    // Label colour: red < £5,250, orange £5,250–£7,839, green £7,840+
     const meterColor = soVal >= GAUGE_THRESH ? 'var(--good)' : soVal >= GAUGE_RED_END + 1 ? 'var(--warn)' : 'var(--bad)';
     const targetPct = Math.round(soVal / GAUGE_THRESH * 100);
-    document.getElementById('meter-label').textContent = gbp(soVal) + ' of £16,678 (' + targetPct + '%)';
+    document.getElementById('meter-label').textContent = gbp(soVal) + ' of £7,840 (' + targetPct + '%)';
     document.getElementById('meter-label').style.color = meterColor;
 
     renderSO(soOrders, soLineTotals);
